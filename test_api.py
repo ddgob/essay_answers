@@ -158,3 +158,35 @@ def test_empty_essay_and_queries_response_code(test_client):
     response = test_client.post('/answers', json=test_data)
 
     assert response.status_code == 400
+
+def test_whitespace_essay_response_body(test_client):
+    """
+    Test that the response from the /answers endpoint contains 
+    the correct error message when the essay is a whitespace.
+    """
+
+    test_data = {
+        "essay": " ",
+        "queries": ["What is courage?", "What is bravery?"]
+    }
+
+    response = test_client.post('/answers', json=test_data)
+
+    data = response.get_json()
+
+    assert data["error"] == "Essay cannot be empty."
+
+def test_whitespace_essay_response_code(test_client):
+    """
+    Test that the /answers endpoint returns a 400 Bad Request status 
+    when the essay is a whitespace.
+    """
+
+    test_data = {
+        "essay": "",
+        "queries": ["What is courage?", "What is bravery?"]
+    }
+
+    response = test_client.post('/answers', json=test_data)
+
+    assert response.status_code == 400
