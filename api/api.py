@@ -5,18 +5,6 @@ queries using an object-oriented approach.
 It includes an endpoint (/answers) that accepts a POST request
 containing an essay and a list of queries, then returns a JSON response
 with answers for each query.
-
-Example usage:
-    Start the Flask server:
-        $ gunicorn api:api
-
-    Send a POST request to /answers:
-        $ curl -X POST http://127.0.0.1:8000/answers \
-            -H "Content-Type: application/json" \
-            -d '{
-                    "essay": "This is an essay.", 
-                    "queries": ["What is courage?"]
-                }'
 """
 
 from typing import List, Dict, Any
@@ -89,6 +77,3 @@ class EssayAnswersAPI:
         ]
 
         return jsonify({"answers": answers})
-
-
-api: Flask = EssayAnswersAPI().get_instance()
