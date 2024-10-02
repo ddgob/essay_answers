@@ -5,8 +5,10 @@ name = "pypi"
 
 [packages]
 flask = "*"
+gunicorn = "*"
 
 [dev-packages]
+mypy = "*"
 
 [requires]
 python_version = "3.11"
