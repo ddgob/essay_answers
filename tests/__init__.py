@@ -19,11 +19,11 @@ from typing import Generator
 import pytest
 from flask.testing import FlaskClient
 
-from api import api
+from api import essay_answers_api
 
 @pytest.fixture
 def test_client() -> Generator[FlaskClient, None, None]:
     """Set up a test client for Flask."""
-    api.config['TESTING'] = True
-    with api.test_client() as client:
+    essay_answers_api.config['TESTING'] = True
+    with essay_answers_api.test_client() as client:
         yield client
