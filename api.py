@@ -37,10 +37,13 @@ class EssayAnswersAPI:
     def get_answers(self) -> Response:
         """
         Handles POST requests to the /answers endpoint.
-        
-        This function processes a POST request that contains an essay
-        and a list of queries. It returns a JSON response with a list
-        of answers, where each answer corresponds to a query.
+
+        This function processes a POST request that contains an essay 
+        and a list of queries. It validates that the essay is not empty 
+        or a string of whitespaces. If the essay is empty or contains 
+        only whitespace, it returns a 400 Bad Request response with 
+        an error message. Otherwise, it returns a JSON response with 
+        a list of answers, where each answer corresponds to a query.
 
         Expected JSON input format:
         {
@@ -48,8 +51,17 @@ class EssayAnswersAPI:
             "queries": ["What is courage?", "What is bravery?"]
         }
 
+        If the 'essay' field is empty or contains only whitespace:
+        {
+            "error": "Essay cannot be empty."
+        }
+
         Returns:
-            Response: A JSON object containing a list of answers.
+            Response: A JSON object containing either a list of answers 
+            or an error message. Example success response:
+            {
+                "answers": ["Answer number 1", "Answer number 2", ...]
+            }
         """
         data: Dict[str, Any] = request.get_json()
         essay: str = data.get('essay', '')
