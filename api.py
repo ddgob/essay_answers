@@ -21,7 +21,7 @@ Example usage:
 
 from typing import List, Dict, Any
 
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, make_response
 
 class EssayAnswersAPI:
     
@@ -56,7 +56,7 @@ class EssayAnswersAPI:
         queries: List[str] = data.get('queries', [])
 
         if not essay.strip():
-            return jsonify({"error": "Essay cannot be empty."}), 400
+            return make_response(jsonify({"error": "Essay cannot be empty."}), 400)
 
         answers: List[str] = [
             f'Answer number {answer_number + 1}' 
