@@ -124,7 +124,7 @@ def test_empty_essay_response_body(test_client):
 
     data = response.get_json()
 
-    assert data["error"] == "Essay cannot be empty string."
+    assert data["error"] == "Essay cannot be empty."
 
 def test_empty_essay_and_queries_response_body(test_client):
     """
@@ -142,7 +142,7 @@ def test_empty_essay_and_queries_response_body(test_client):
 
     data = response.get_json()
 
-    assert data["error"] == "Essay cannot be empty string."
+    assert data["error"] == "Essay cannot be empty."
 
 def test_empty_essay_and_queries_response_code(test_client):
     """
