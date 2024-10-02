@@ -20,20 +20,12 @@ Example usage:
     $ pipenv run pytest
 """
 
-from typing import Dict, Any, Generator
+from typing import Dict, Any
 
-import pytest
 from flask.testing import FlaskClient
 from werkzeug.test import TestResponse # import for WSGI response typing
 
-from api import api
-
-@pytest.fixture
-def test_client() -> Generator[FlaskClient, None, None]:
-    """Set up a test client for Flask."""
-    api.config['TESTING'] = True
-    with api.test_client() as client:
-        yield client
+from . import test_client
 
 class TestEssayAnswersAPI:
     """
