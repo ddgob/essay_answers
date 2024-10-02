@@ -79,7 +79,9 @@ class EssayAnswersAPI:
         queries: List[str] = data.get('queries', [])
 
         if not essay.strip():
-            return make_response(jsonify({"error": "Essay cannot be empty."}), 400)
+            error_message = "Essay cannot be empty."
+            json: Response = jsonify({"error": error_message})
+            return make_response(json, 400)
 
         answers: List[str] = [
             f'Answer number {answer_number + 1}' 
