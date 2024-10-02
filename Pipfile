@@ -9,6 +9,8 @@ gunicorn = "*"
 
 [dev-packages]
 mypy = "*"
+pytest = "*"
+flask-testing = "*"
 
 [requires]
 python_version = "3.11"
