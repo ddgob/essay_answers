@@ -1,3 +1,21 @@
+"""
+This module contains unit tests for the Flask API's /answers endpoint.
+
+The tests validate the following behaviors:
+1. The API returns the correct status codes for valid and invalid 
+   requests.
+2. The API returns the correct structure of JSON responses.
+3. The API handles cases such as empty essays or queries correctly.
+4. The number of answers returned matches the number of queries sent.
+
+The tests use the pytest framework and test Flask's test client to 
+simulate HTTP requests and validate responses.
+
+Example usage:
+    Run the tests using pytest:
+    $ pipenv run pytest
+"""
+
 import pytest
 
 from api import api
