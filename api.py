@@ -58,6 +58,9 @@ def get_answers() -> Response:
     essay: str = data.get('essay', '')
     queries: List[str] = data.get('queries', [])
 
+    if not essay.strip():
+        return jsonify({"error": "Essay cannot be empty."}), 400
+
     # TODO change the logic for processing essays and queries to
     # obtain answers
     answers: List[str] = [
