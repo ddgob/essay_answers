@@ -24,7 +24,15 @@ from typing import List, Dict, Any
 from flask import Flask, request, jsonify, Response, make_response
 
 class EssayAnswersAPI:
-    
+    """
+    A class-based API for processing essays and queries.
+
+    This class encapsulates a Flask application that provides an 
+    endpoint (/answers) to process POST requests containing an essay and
+    a list of queries. It handles request validation and returns JSON 
+    responses with answers or error messages based on the input.
+    """
+
     def __init__(self) -> None:
         self.api: Flask = Flask(__name__)
         self.api.add_url_rule('/answers', view_func=self.get_answers,
@@ -32,6 +40,9 @@ class EssayAnswersAPI:
                               )
 
     def get_instance(self) -> Flask:
+        """
+        Returns the Flask app instance.
+        """
         return self.api
 
     def get_answers(self) -> Response:
