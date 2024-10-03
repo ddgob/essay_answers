@@ -14,7 +14,7 @@ with answers.
 
 Example usage:
     Start the Flask server:
-        $ gunicorn api:essay_answers_api
+        $ pipenv gunicorn api:essay_answers_api
 
     Send a POST request to /answers:
         $ curl -X POST http://127.0.0.1:8000/answers \
