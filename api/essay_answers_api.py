@@ -23,9 +23,7 @@ class EssayAnswersAPI:
 
     def __init__(self) -> None:
         self.api: Flask = Flask(__name__)
-        self.api.add_url_rule('/answers', view_func=self.get_answers,
-                              methods=['POST']
-                              )
+        self.api.add_url_rule('/answers', view_func=self.get_answers, methods=['POST'])
 
     def get_instance(self) -> Flask:
         """
@@ -62,6 +60,7 @@ class EssayAnswersAPI:
                 "answers": ["Answer number 1", "Answer number 2", ...]
             }
         """
+
         data: Dict[str, Any] = request.get_json()
         essay: str = data.get('essay', '')
         queries: List[str] = data.get('queries', [])
