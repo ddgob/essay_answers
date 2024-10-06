@@ -234,7 +234,11 @@ class AnswerService:
 
         return best_answers
 
-    def answer_questions_based_on_subtitle(self, essay: str, queries: List[str]) -> List[str]:
+    def answer_questions_based_on_subtitle(
+        self,
+        essay: str,
+        queries: List[str]
+    ) -> List[str]:
         """
         Provides simple answers to the queries, returning the most 
         similar sentence for each query based on the subtitles.
