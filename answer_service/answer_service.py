@@ -197,6 +197,12 @@ class AnswerService:
         preprocessor: TextPreProcessor = TextPreProcessor(essay)
 
         if preprocessor.is_text_only_subtitles():
+            warning_log: str = (
+                "Text contains only subtitles. No answers found because there was no "
+                "content (sentences) under the subtitles so the queries could be "
+                "compared to."
+            )
+            self.logger.warning(warning_log)
             return {}
 
         encoder: Encoder = Encoder()
