@@ -14,7 +14,11 @@ class TextPreProcessor:
 
     Attributes:
         text (str): The input text to be processed.
+        MAX_CHARACTERS_SUBTITLE (int): The maximum number of characters
+            allowed in a subtitle.
     """
+
+    MAX_CHARACTERS_SUBTITLE: int = 100
 
     def __init__(self, text) -> None:
         """
@@ -65,7 +69,7 @@ class TextPreProcessor:
         Determines if a given paragraph is a subtitle.
 
         A paragraph is considered a subtitle if it contains exactly one
-        sentence.
+        sentence and contains 100 characters or less.
 
         Args:
             paragraph (str): The paragraph to check.
@@ -74,10 +78,12 @@ class TextPreProcessor:
             bool: True if the paragraph is a subtitle, False otherwise.
         """
 
+
+
         paragraph = paragraph.strip()
         sentences: List[str] = self.split_sentences(paragraph)
 
-        if len(sentences) == 1:
+        if len(sentences) == 1 and len(sentences[0]) <= self.MAX_CHARACTERS_SUBTITLE:
             return True
         return False
 
