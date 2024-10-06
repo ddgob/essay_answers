@@ -60,7 +60,8 @@ class TestEncoder:
         """
         Test encoding an empty string.
 
-        Verifies that the Encoder can handle an empty string without crashing.
+        Verifies that the Encoder can handle an empty string without 
+        crashing.
         """
 
         sentence: str = ""

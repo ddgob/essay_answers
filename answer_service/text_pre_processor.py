@@ -142,8 +142,8 @@ class TextPreProcessor:
         """
         Retrieves the body of the text, excluding subtitles.
 
-        This method processes the text and returns a list of all sentences 
-        found in the paragraphs, excluding the subtitles.
+        This method processes the text and returns a list of all 
+        sentences found in the paragraphs, excluding the subtitles.
 
         Returns:
             List[str]: A list of sentences from the body of the text.
@@ -170,8 +170,8 @@ class TextPreProcessor:
         """
         Retrieves all subtitles found in the text.
 
-        This method processes the text and returns a list of all subtitles
-        found in the paragraphs.
+        This method processes the text and returns a list of all 
+        subtitles found in the paragraphs.
 
         Returns:
             List[str]: A list of subtitles from the text.
@@ -214,7 +214,8 @@ class TextPreProcessor:
         without any body sentences.
 
         Returns:
-            bool: True if the text contains only subtitles, False otherwise.
+            bool: True if the text contains only subtitles, False 
+            otherwise.
         """
 
         self.logger.info("Checking if text contains only subtitles...")

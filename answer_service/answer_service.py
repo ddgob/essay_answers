@@ -26,14 +26,14 @@ class AnswerService:
     queries, providing answers based on subtitle or overall similarity.
 
     Methods:
-        get_best_answers: Returns detailed answers with 
+        - get_best_answers: Returns detailed answers with 
         similarity scores. 
-        answer_questions: Returns a simple list of best answers for 
+        - answer_questions: Returns a simple list of best answers for 
         each query.
-        get_best_subtitles: Finds the best-matching subtitles for the 
+        - get_best_subtitles: Finds the best-matching subtitles for the 
         queries.
-        get_best_answers_based_on_subtitle: Answers queries by finding the 
-        best-matching subtitles and sentences in the essay.
+        - get_best_answers_based_on_subtitle: Answers queries by finding 
+        the best-matching subtitles and sentences in the essay.
     """
 
     def __init__(self) -> None:

@@ -251,11 +251,13 @@ class TestAnswerService:
 
     def test_get_best_answers_based_on_subtitle(self) -> None:
         """
-        Test get_best_answers_based_on_subtitle to ensure detailed answers with 
-        similarity scores are returned for each query based on subtitle matching.
+        Test get_best_answers_based_on_subtitle to ensure detailed 
+        answers with similarity scores are returned for each query 
+        based on subtitle matching.
 
         Asserts:
-            Correct detailed answers are returned in the expected format.
+            Correct detailed answers are returned in the expected 
+            format.
         """
 
         essay: str = "Title\nThis is the content under the title. This is a sentence."
@@ -271,9 +273,9 @@ class TestAnswerService:
 
     def test_empty_queries_based_on_subtitle(self) -> None:
         """
-        Test the edge case where an empty list of queries is provided when trying 
-        to get answers based on subtitle to ensure the service handles it correctly
-        by returning no answers.
+        Test the edge case where an empty list of queries is provided 
+        when trying to get answers based on subtitle to ensure the 
+        service handles it correctly by returning no answers.
 
         Asserts:
             No answers are returned for empty queries.
@@ -291,9 +293,9 @@ class TestAnswerService:
 
     def test_subtitle_only_text_for_get_best_answers_based_on_subtitle(self) -> None:
         """
-        Test the case where the text contains only subtitles to ensure no answers 
-        are returned if there is no content under the subtitles when using 
-        get_best_answers_based_on_subtitle.
+        Test the case where the text contains only subtitles to ensure 
+        no answers are returned if there is no content under the 
+        subtitles when using get_best_answers_based_on_subtitle.
 
         Asserts:
             No answers are returned if the text only contains subtitles.
@@ -311,8 +313,8 @@ class TestAnswerService:
 
     def test_get_best_subtitles_empty_essay(self) -> None:
         """
-        Test get_best_subtitles with an empty essay to ensure the service handles it
-        correctly by returning no subtitles.
+        Test get_best_subtitles with an empty essay to ensure the 
+        service handles it correctly by returning no subtitles.
 
         Asserts:
             No subtitles are returned for an empty essay.
