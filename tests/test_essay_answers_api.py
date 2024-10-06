@@ -402,5 +402,235 @@ class TestEssayAnswersAPI:
 
         assert all(answer in data['answers'] for answer in expected_answers)
 
+    def test_get_answers_based_on_subtitle_success(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test /answers_based_on_subtitles endpoint for a successful 
+        response.
+        
+        Asserts:
+            A valid list of answers is returned based on subtitles.
+        """
+
+        essay: str = (
+            "Title\nThis is the content under the title. And its a paragraph.\n"
+            "Subtitle\nThis is the content under the subtitle. And its a paragraph.\n"
+        )
+
+        test_data: Dict[str, Any] = {
+            "essay": essay,
+            "queries": ["What is under the title?"]
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+
+        data: Dict[str, Any] = response.get_json()
+        assert data['answers'] == ["This is the content under the title"]
+
+    def test_get_answers_based_on_subtitle_subtitles_only(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test /answers_based_on_subtitles endpoint when an essay with 
+        only subtitles is provided.
+
+        Asserts:
+            An empty list with no answers is returned.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "Title\nThis is another subtitle.",
+            "queries": ["What is under the title?"]
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+
+        data: Dict[str, Any] = response.get_json()
+        assert data['answers'] == []
+
+    def test_get_answers_based_on_subtitle_empty_essay(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test /answers_based_on_subtitles endpoint with empty essay.
+        
+        Asserts:
+            Error message is returned for an empty essay.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "",
+            "queries": ["What is under the title?"]
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+
+        data: Dict[str, Any] = response.get_json()
+        assert data['error'] == 'Essay cannot be empty.'
+
+    def test_get_answers_based_on_subtitle_empty_queries(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test /answers_based_on_subtitles endpoint with empty queries.
+        
+        Asserts:
+            Error message is returned for empty queries.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "Title\nThis is the content under the title.",
+            "queries": []
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+
+        data: Dict[str, Any] = response.get_json()
+        assert data['error'] == "Queries list cannot be empty."
+
+    def test_get_answers_based_on_subtitle_non_string_queries(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test /answers_based_on_subtitles with non-string queries.
+        
+        Asserts:
+            Error message is returned for non-string queries.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "Title\nThis is the content under the title.",
+            "queries": [123, 456]
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+
+        data: Dict[str, Any] = response.get_json()
+        assert data['error'] == "Queries must be a list of strings."
+
+    def test_answers_based_on_subtitle_full_essay_response_code(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test that the /answers_based_on_subtitles endpoint returns a 
+        200 OK status when provided with a full essay and queries.
+        """
+
+        with open('./tests/docs/full_essay.txt', 'r', encoding='utf-8') as file:
+            full_essay: str = file.read()
+
+        full_essay_query_1: str = "What is courage?"
+        full_essay_query_2: str = "What is bravery?"
+        full_essay_query_3: str = ("An example of a character in the literature who"
+                              " displays courage"
+                              )
+        full_essay_query_4: str = ("An example of a character in the literature who"
+                              " exhibits bravery"
+                              )
+        full_essay_query_5: str = "What risks a courageous act entails?"
+        full_essay_query_6: str = "What risks a brave act entails?"
+
+        full_essay_queries: List[str] = [
+            full_essay_query_1,
+            full_essay_query_2,
+            full_essay_query_3,
+            full_essay_query_4,
+            full_essay_query_5,
+            full_essay_query_6
+        ]
+
+        test_data: Dict[str, Any] = {
+            "essay": full_essay,
+            "queries": full_essay_queries
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+
+        assert response.status_code == 200
+
+    def test_answers_based_on_subtitle_full_essay_response_body(
+        self,
+        test_client: FlaskClient
+    ) -> None:
+        """
+        Test that the response from the /answers_based_on_subtitles 
+        endpoint contains the 'answers' key in the JSON response body 
+        when provided with a full essay and queries.
+        """
+
+        with open('./tests/docs/full_essay.txt', 'r', encoding='utf-8') as file:
+            full_essay: str = file.read()
+
+        full_essay_query_1: str = "What is courage?"
+        full_essay_query_2: str = "What is bravery?"
+        full_essay_query_3: str = ("An example of a character in the literature who"
+                              " displays courage"
+                              )
+        full_essay_query_4: str = ("An example of a character in the literature who"
+                              " exhibits bravery"
+                              )
+        full_essay_query_5: str = "What risks a courageous act entails?"
+        full_essay_query_6: str = "What risks a brave act entails?"
+
+        full_essay_queries: List[str] = [
+            full_essay_query_1,
+            full_essay_query_2,
+            full_essay_query_3,
+            full_essay_query_4,
+            full_essay_query_5,
+            full_essay_query_6
+        ]
+
+        test_data: Dict[str, Any] = {
+            "essay": full_essay,
+            "queries": full_essay_queries
+        }
+
+        response: TestResponse = test_client.post(
+            '/answers_based_on_subtitles',
+            json=test_data
+        )
+        data: Dict[str, Any] = response.get_json()
+
+        path_to_expected_answers: str = (
+            './tests/docs/expected_answers_full_essay_based_on_subtitles.txt'
+        )
+        with open(path_to_expected_answers, 'r', encoding='utf-8') as file:
+            expected_answers: List[str] = file.read().splitlines()
+
+        for answer in data['answers']:
+            print(answer)
+            print("##################################################################")
+
+        assert all(answer in data['answers'] for answer in expected_answers)
+
 if __name__ == '__main__':
     pytest.main()
+    """tester = TestEssayAnswersAPI()
+    from tests import test_client
+    tester.test_get_answers_based_on_subtitle_success(test_client)"""
