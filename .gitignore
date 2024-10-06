@@ -162,3 +162,11 @@ cython_debug/
 #.idea/
 
 .vscode/
+
+.pylintrc
+
+docker-compose.dev.yml
+
+Dockerfile.dev
+
+.DS_Store
