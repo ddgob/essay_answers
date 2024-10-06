@@ -31,6 +31,11 @@ class EssayAnswersAPI:
     def __init__(self) -> None:
         self.api: Flask = Flask(__name__)
         self.api.add_url_rule('/answers', view_func=self.get_answers, methods=['POST'])
+        self.api.add_url_rule(
+            '/answers_based_on_subtitles',
+            view_func=self.get_answers_based_on_subtitle,
+            methods=['POST']
+        )
         self.logger: Logger = logging.getLogger(__name__)
         self.logger.info("API initialized.")
 
@@ -196,5 +201,64 @@ class EssayAnswersAPI:
         answers: List[str] = answer_service.answer_questions(essay, queries)
 
         self.logger.info("Finished processing POST request to /answers sucessfully.")
+
+        return jsonify({"answers": answers})
+
+    def get_answers_based_on_subtitle(self) -> Response:
+        """
+        Handles POST requests to the /answers_based_on_subtitles 
+        endpoint.
+
+        This function processes a POST request that contains an essay 
+        and a list of queries. It validates that the essay is not empty 
+        or a string of whitespaces. If the essay is empty or contains 
+        only whitespace, it returns a 400 Bad Request response with 
+        an error message. Otherwise, it returns a JSON response with 
+        a list of answers, where each answer corresponds to a query,
+        using subtitles from the essay.
+
+        Expected JSON input format:
+        {
+            "essay": "This is an example essay.",
+            "queries": ["What is courage?", "What is bravery?"]
+        }
+
+        If the 'essay' field is empty or contains only whitespace:
+        {
+            "error": "Essay cannot be empty."
+        }
+
+        Returns:
+            Response: A JSON object containing either a list of answers 
+            or an error message. Example success response:
+            {
+                "answers": ["Answer number 1", "Answer number 2", ...]
+            }
+        """
+
+        self.logger.info("Processing POST request to /answers_based_on_subtitles...")
+
+        data: Dict[str, Any] = request.get_json()
+        essay: str = data.get('essay', '')
+        queries: List[str] = data.get('queries', [])
+
+        response = self.validate_essay(essay)
+        if response:
+            return response
+
+        response = self.validate_queries(queries)
+        if response:
+            return response
+
+        answer_service: AnswerService = AnswerService()
+        answers: List[str] = answer_service.answer_questions_based_on_subtitle(
+            essay,
+            queries
+        )
+
+        log: str = ("Finished processing POST request to /answers_based_on_subtitles "
+                    "sucessfully."
+                    )
+        self.logger.info(log)
 
         return jsonify({"answers": answers})
