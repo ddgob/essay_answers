@@ -32,7 +32,7 @@ class AnswerService:
         each query.
         get_best_subtitles: Finds the best-matching subtitles for the 
         queries.
-        answer_based_on_subtitle: Answers queries by finding the 
+        get_best_answers_based_on_subtitle: Answers queries by finding the 
         best-matching subtitles and sentences in the essay.
     """
 
@@ -173,7 +173,11 @@ class AnswerService:
         self.logger.info("Finished finding best subtitles for queries.")
         return best_subtitles
 
-    def answer_based_on_subtitle(self, essay: str, queries: List[str]) -> List[str]:
+    def get_best_answers_based_on_subtitle(
+            self,
+            essay: str,
+            queries: List[str]
+        ) -> List[str]:
         """
         Provides answers to queries by finding the best-matching 
         subtitle to the query and then finding the sentence that best 
@@ -189,8 +193,7 @@ class AnswerService:
             List[str]: A list of the most similar sentences from the 
             essay based on the best matching subtitles.
         """
-
-        self.logger.info("Answering questions based on subtitles...")
+        self.logger.info("Getting best answers to queries based on subtitles...")
         preprocessor: TextPreProcessor = TextPreProcessor(essay)
 
         if preprocessor.is_text_only_subtitles():
@@ -232,5 +235,5 @@ class AnswerService:
         for query, (answer, similarity) in best_answers.items():
             answers.append(answer)
 
-        self.logger.info("Finished returning list of answers to questions.")
+        self.logger.info("Finished getting best answers to queries based on subtitles...")
         return answers
