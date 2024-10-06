@@ -8,7 +8,9 @@ text into a structured format.
 
 from typing import List, Dict
 
-from answer_service.text_pre_processor import TextPreProcessor
+import pytest
+
+from answer_service import TextPreProcessor
 
 class TestTextPreProcessor:
     """
@@ -208,6 +210,7 @@ class TestTextPreProcessor:
         structure when only sentences are provided without any
         subtitles.
         """
+
         sentences_only: str = "This is the first sentence. This is the second."
         sentences_processor: TextPreProcessor = TextPreProcessor(sentences_only)
 
@@ -219,3 +222,108 @@ class TestTextPreProcessor:
         }
 
         assert sentences_processor.preprocess_text() == expected_sentences_result
+
+    def test_get_text_body_normal(self) -> None:
+        """
+        Test that get_text_body method returns the correct list of 
+        sentences from preprocessed text.
+        """
+
+        text: str = (
+            "Introduction\n"
+            "This is the first paragraph. It contains two sentences.\n"
+            "Conclusion\n"
+            "This is the last paragraph. Last sentence."
+        )
+
+        processor: TextPreProcessor = TextPreProcessor(text)
+
+        expected_body: List[str] = [
+            "This is the first paragraph",
+            "It contains two sentences",
+            "This is the last paragraph",
+            "Last sentence"
+        ]
+
+        assert processor.get_text_body() == expected_body
+
+
+    def test_get_subtitles_normal(self) -> None:
+        """
+        Test that get_subtitles method returns the correct list of 
+        subtitles from preprocessed text.
+        """
+
+        text: str = (
+            "Introduction\n"
+            "This is the first paragraph. This is the second sentence\n"
+            "Conclusion\n"
+            "This is the last paragraph. This is the last sentence"
+        )
+
+        processor: TextPreProcessor = TextPreProcessor(text)
+
+        expected_subtitles: List[str] = ["Introduction", "Conclusion"]
+
+        assert processor.get_subtitles() == expected_subtitles
+
+
+    def test_get_all_text_sentences(self) -> None:
+        """
+        Test that get_all_text_sentences returns all sentences and 
+        subtitles from the text.
+        """
+
+        text: str = (
+            "Introduction\n"
+            "This is the first paragraph.\n"
+            "Conclusion\n"
+            "This is the last paragraph."
+        )
+
+        processor: TextPreProcessor = TextPreProcessor(text)
+
+        expected_sentences: List[str] = [
+            "This is the first paragraph",
+            "This is the last paragraph",
+            "Introduction",
+            "Conclusion"
+        ]
+
+        for sentence in processor.get_all_text_sentences():
+            if sentence not in expected_sentences:
+                assert False
+
+
+    def test_is_text_only_subtitles_true(self) -> None:
+        """
+        Test that is_text_only_subtitles returns True if the text 
+        contains only subtitles and no sentences.
+        """
+
+        text: str = "Subtitle1\n\nSubtitle2\n\n"
+
+        processor: TextPreProcessor = TextPreProcessor(text)
+
+        assert processor.is_text_only_subtitles() is True
+
+
+    def test_is_text_only_subtitles_false(self) -> None:
+        """
+        Test that is_text_only_subtitles returns False if the text 
+        contains subtitles and sentences.
+        """
+
+        text: str = (
+            "Subtitle1\n"
+            "This is a sentence. Here is one more\n"
+            "Subtitle2\n"
+            "Another sentence."
+        )
+
+        processor: TextPreProcessor = TextPreProcessor(text)
+
+        assert processor.is_text_only_subtitles() is False
+
+if __name__ == '__main__':
+    pytest.main()
