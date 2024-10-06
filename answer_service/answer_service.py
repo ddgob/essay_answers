@@ -26,7 +26,7 @@ class AnswerService:
     queries, providing answers based on subtitle or overall similarity.
 
     Methods:
-        answer_questions_detailed: Returns detailed answers with 
+        get_best_answers: Returns detailed answers with 
         similarity scores. 
         answer_questions: Returns a simple list of best answers for 
         each query.
@@ -44,7 +44,7 @@ class AnswerService:
         self.logger: Logger = logging.getLogger(__name__)
         self.logger.info("Answer service initialized.")
 
-    def answer_questions_detailed(
+    def get_best_answers(
             self,
             essay: str,
             queries: List[str]
@@ -64,7 +64,7 @@ class AnswerService:
             sentence from the essay and its similarity score.
         """
 
-        self.logger.info("Answering questions in detail (with similarities)...")
+        self.logger.info("Getting best answers to queries...")
 
         preprocessor = TextPreProcessor(essay)
         essay_sentences: List[str] = preprocessor.get_text_body()
@@ -92,7 +92,7 @@ class AnswerService:
             current_answer: str = embedded_essay_sentences[index].get_sentence()
             answers[query.get_sentence()] = (current_answer, similarity)
 
-        self.logger.info("Finished answering questions in detail (with similarities).")
+        self.logger.info("Finished getting best answers to queries.")
 
         return answers
 
@@ -111,14 +111,14 @@ class AnswerService:
             essay.
         """
 
-        detailed_answers: Dict[str, tuple[str, float]] = self.answer_questions_detailed(
+        best_answers: Dict[str, tuple[str, float]] = self.get_best_answers(
             essay,
             queries
         )
 
         self.logger.info("Returning list of answers to questions...")
         answers: List[str] = []
-        for query, (answer, similarity) in detailed_answers.items():
+        for query, (answer, similarity) in best_answers.items():
             answers.append(answer)
 
         self.logger.info("Finished returning list of answers to questions.")
