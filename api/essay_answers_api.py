@@ -7,9 +7,11 @@ containing an essay and a list of queries, then returns a JSON response
 with answers for each query.
 """
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
 from flask import Flask, request, jsonify, Response, make_response
+
+from answer_service import AnswerService
 
 class EssayAnswersAPI:
     """
@@ -30,6 +32,85 @@ class EssayAnswersAPI:
         Returns the Flask app instance.
         """
         return self.api
+
+    def validate_string_essay(self, essay: str) -> Union[None, Response]:
+        """
+        Validates the essay content.
+        Checks if the essay is a string.
+        """
+
+        if not isinstance(essay, str):
+            json: Response = jsonify({"error": "Essay must be a string."})
+            return make_response(json, 400)
+
+        return None
+
+    def validate_empty_essay(self, essay: str) -> Union[None, Response]:
+        """
+        Validates the essay content.
+        Checks if the essay is non-empty string.
+        """
+
+        if not essay.strip():
+            json: Response = jsonify({"error": "Essay cannot be empty."})
+            return make_response(json, 400)
+
+        return None
+
+    def validate_essay(self, essay: str) -> Union[None, Response]:
+        """
+        Validates the essay content.
+        Checks if the essay is a non-empty string.
+        """
+
+        response = self.validate_string_essay(essay)
+        if response:
+            return response
+
+        response = self.validate_empty_essay(essay)
+        if response:
+            return response
+
+        return None
+
+    def validate_empty_queries(self, queries: List[str]) -> Union[None, Response]:
+        """
+        Validates the queries list.
+        Ensures that the list is not empty.
+        """
+
+        if not queries:
+            json: Response = jsonify({"error": "Queries list cannot be empty."})
+            return make_response(json, 400)
+
+        return None
+
+    def validate_string_queries(self, queries: List[str]) -> Union[None, Response]:
+        """
+        Validates the queries list.
+        Ensures that the list contains only strings.
+        """
+
+        if not all(isinstance(query, str) for query in queries):
+            json: Response = jsonify({"error": "Queries must be a list of strings."})
+            return make_response(json, 400)
+
+        return None
+
+    def validate_queries(self, queries: List[str]) -> Union[None, Response]:
+        """
+        Validates the queries list.
+        Ensures that the list is not empty and contains only strings.
+        """
+        response = self.validate_empty_queries(queries)
+        if response:
+            return response
+
+        response = self.validate_string_queries(queries)
+        if response:
+            return response
+
+        return None
 
     def get_answers(self) -> Response:
         """
@@ -65,14 +146,15 @@ class EssayAnswersAPI:
         essay: str = data.get('essay', '')
         queries: List[str] = data.get('queries', [])
 
-        if not essay.strip():
-            error_message = "Essay cannot be empty."
-            json: Response = jsonify({"error": error_message})
-            return make_response(json, 400)
+        response = self.validate_essay(essay)
+        if response:
+            return response
 
-        answers: List[str] = [
-            f'Answer number {answer_number + 1}' 
-            for answer_number in range(len(queries))
-        ]
+        response = self.validate_queries(queries)
+        if response:
+            return response
+
+        answer_service: AnswerService = AnswerService()
+        answers: List[str] = answer_service.answer_questions(essay, queries)
 
         return jsonify({"answers": answers})
