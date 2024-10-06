@@ -101,19 +101,88 @@ class TextPreProcessor:
         """
 
         paragraphs: List[str] = self.split_paragraphs()
-        text_body: Dict[str, List[str]] = {}
+        preprocessed_text: Dict[str, List[str]] = {}
         last_subtitle: str = 'Introduction'
 
         for paragraph in paragraphs:
             if self.is_subtitle(paragraph):
                 subtitle = self.split_sentences(paragraph)[0]
-                text_body[subtitle] = []
+                preprocessed_text[subtitle] = []
                 last_subtitle = subtitle
             else:
-                if last_subtitle not in text_body:
-                    text_body[last_subtitle] = []
+                if last_subtitle not in preprocessed_text:
+                    preprocessed_text[last_subtitle] = []
 
                 sentences: List[str] = self.split_sentences(paragraph)
-                text_body[last_subtitle].extend(sentences)
+                preprocessed_text[last_subtitle].extend(sentences)
 
+        return preprocessed_text
+
+    def get_text_body(self) -> List[str]:
+        """
+        Retrieves the body of the text, excluding subtitles.
+
+        This method processes the text and returns a list of all sentences 
+        found in the paragraphs, excluding the subtitles.
+
+        Returns:
+            List[str]: A list of sentences from the body of the text.
+        """
+
+        preprocessed_text: Dict[str, List[str]] = self.preprocess_text()
+        text_body: List[str] = []
+
+        if self.is_text_only_subtitles():
+            text_body = list(preprocessed_text.keys())
+            return text_body
+
+        for paragraph in preprocessed_text.values():
+            for sentence in paragraph:
+                text_body.append(sentence)
         return text_body
+
+    def get_subtitles(self) -> List[str]:
+        """
+        Retrieves all subtitles found in the text.
+
+        This method processes the text and returns a list of all subtitles
+        found in the paragraphs.
+
+        Returns:
+            List[str]: A list of subtitles from the text.
+        """
+
+        preprocessed_text: Dict[str, List[str]] = self.preprocess_text()
+        return list(preprocessed_text.keys())
+
+    def get_all_text_sentences(self) -> List[str]:
+        """
+        Retrieves all sentences in the text, including subtitles and 
+        body sentences.
+
+        This method combines both subtitles and body sentences into a 
+        single list.
+
+        Returns:
+            List[str]: A list of all sentences from the text, including 
+            subtitles.
+        """
+
+        return self.get_text_body() + self.get_subtitles()
+
+    def is_text_only_subtitles(self) -> bool:
+        """
+        Checks if the text contains only subtitles.
+
+        This method determines if the text consists solely of subtitles 
+        without any body sentences.
+
+        Returns:
+            bool: True if the text contains only subtitles, False otherwise.
+        """
+
+        preprocessed_text: Dict[str, List[str]] = self.preprocess_text()
+        if any(preprocessed_text.values()):
+            return False
+        return True
+
