@@ -269,7 +269,8 @@ class TestAnswerService:
         )
 
         assert "What is under the title?" in best_answers
-        assert best_answers["What is under the title?"][0] == "This is the content under the title"
+        answer: str = "This is the content under the title"
+        assert best_answers["What is under the title?"][0] == answer
 
     def test_empty_queries_based_on_subtitle(self) -> None:
         """
