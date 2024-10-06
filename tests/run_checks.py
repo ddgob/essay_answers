@@ -8,7 +8,7 @@ subdirectories, runs type checks with mypy, and runs tests with pytest.
 
 import subprocess
 import os
-import sys
+import re
 
 class CodeQualityChecker:
     """
@@ -65,7 +65,7 @@ class CodeQualityChecker:
                 print(result.stderr)
                 return False
             else:
-                print("mypy completed successfully.")
+                print("mypy completed successfully. Typing is correct!")
         else:
             print("No Python files found.")
         return True
@@ -90,7 +90,12 @@ class CodeQualityChecker:
             print(result.stderr)
             return False
         else:
-            print("pytest completed successfully.")
+            passed_tests = re.search(r"(\d+) passed", result.stdout)
+            if passed_tests:
+                num_passed = passed_tests.group(1)
+                print(f"pytest completed successfully. All {num_passed} tests passed!")
+            else:
+                print("pytest completed successfully. No tests were run.")
         return True
 
     def run_checks(self):
@@ -103,6 +108,7 @@ class CodeQualityChecker:
         If either mypy or pytest fails, an appropriate message is 
         printed and the process is aborted.
         """
+        
         if self.run_mypy() and self.run_pytest():
             print("All checks passed successfully.")
         else:
