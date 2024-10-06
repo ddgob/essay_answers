@@ -47,6 +47,15 @@ We use structured error handling, ensuring that all API endpoints return meaning
 - Dependencies are managed using `pipenv` for environment isolation and reproducibility.
 - Docker is used for consistent environment management.
 
+### Logging
+
+The project implements logging in various components to provide detailed insights into the internal operations. Logging is used to track the following processes:
+
+- Text preprocessing (splitting paragraphs, identifying subtitles, etc...).
+- Sentence encoding and embedding generation.
+- Query and essay comparison to find the most relevant answers.
+- Validation and API requests handling in EssayAnswersAPI.
+
 ## Prerequisites
 
 ### Docker
