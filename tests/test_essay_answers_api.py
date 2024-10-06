@@ -20,12 +20,11 @@ Example usage:
     $ pipenv run pytest
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from flask.testing import FlaskClient
 from werkzeug.test import TestResponse # import for WSGI response typing
-
-from . import test_client
+import pytest
 
 class TestEssayAnswersAPI:
     """
@@ -85,10 +84,10 @@ class TestEssayAnswersAPI:
 
         assert len(data["answers"]) == len(test_data["queries"])
 
-    def test_empty_queries_response_body(self, test_client: FlaskClient) -> None:
+    def test_empty_queries_response_code(self, test_client: FlaskClient) -> None:
         """
-        Test that the response from the /answers endpoint contains 
-        an empty list of answers when no queries are provided.
+        Test that the /answers endpoint returns a 400 Bad Request status 
+        when no queries are provided.
         """
 
         test_data: Dict[str, Any] = {
@@ -97,9 +96,8 @@ class TestEssayAnswersAPI:
         }
 
         response: TestResponse = test_client.post('/answers', json=test_data)
-        data: Dict[str, Any] = response.get_json()
 
-        assert data["answers"] == []
+        assert response.status_code == 400
 
     def test_empty_essay_response_code(self, test_client: FlaskClient) -> None:
         """
@@ -132,7 +130,8 @@ class TestEssayAnswersAPI:
 
         assert data["error"] == "Essay cannot be empty."
 
-    def test_empty_essay_and_queries_response_body(self, test_client: FlaskClient) -> None:
+    def test_empty_essay_and_queries_response_body(self,
+                                                   test_client: FlaskClient) -> None:
         """
         Test that the response from the /answers endpoint contains 
         the correct error message when both the essay is empty and 
@@ -149,7 +148,8 @@ class TestEssayAnswersAPI:
 
         assert data["error"] == "Essay cannot be empty."
 
-    def test_empty_essay_and_queries_response_code(self, test_client: FlaskClient) -> None:
+    def test_empty_essay_and_queries_response_code(self,
+                                                   test_client: FlaskClient) -> None:
         """
         Test that the /answers endpoint returns a 400 Bad Request status 
         when both the essay and the queries list are empty.
@@ -194,3 +194,213 @@ class TestEssayAnswersAPI:
         response: TestResponse = test_client.post('/answers', json=test_data)
 
         assert response.status_code == 400
+
+    def test_validate_string_essay_invalid(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns a 400 Bad Request status 
+        when the essay is not a string.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": 12345,
+            "queries": ["What is courage?"]
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+
+        assert response.status_code == 400
+
+    def test_validate_string_essay_error_message(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns the correct error 
+        message when the essay is not a string.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": 12345,
+            "queries": ["What is courage?"]
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+        data: Dict[str, Any] = response.get_json()
+
+        assert data["error"] == "Essay must be a string."
+
+    def test_validate_empty_essay_invalid(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns a 400 Bad Request status 
+        when the essay is an empty string.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "",
+            "queries": ["What is courage?"]
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+
+        assert response.status_code == 400
+
+    def test_validate_empty_essay_error_message(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns the correct error 
+        message when the essay is an empty string.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "",
+            "queries": ["What is courage?"]
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+        data: Dict[str, Any] = response.get_json()
+
+        assert data["error"] == "Essay cannot be empty."
+
+    def test_validate_empty_queries_invalid(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns a 400 Bad Request status 
+        when the queries list is empty.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "This is an essay.",  
+            "queries": []
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+
+        assert response.status_code == 400
+
+    def test_validate_empty_queries_error_message(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns the correct error 
+        message when the queries list is empty.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "This is an essay.",  
+            "queries": []
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+        data: Dict[str, Any] = response.get_json()
+
+        assert data["error"] == "Queries list cannot be empty."
+
+    def test_validate_string_queries_invalid(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns a 400 Bad Request status 
+        when the queries list contains non-string values.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "This is an essay.",  
+            "queries": [123, True]
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+
+        assert response.status_code == 400
+
+    def test_validate_string_queries_error_message(self,
+                                                   test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns the correct error 
+        message when the queries list contains non-string values.
+        """
+
+        test_data: Dict[str, Any] = {
+            "essay": "This is an essay.",  
+            "queries": [123, True]
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+        data: Dict[str, Any] = response.get_json()
+
+        assert data["error"] == "Queries must be a list of strings."
+
+    def test_full_essay_response_code(self, test_client: FlaskClient) -> None:
+        """
+        Test that the /answers endpoint returns a 200 OK status 
+        when provided with a full essay and queries.
+        """
+
+        with open('./tests/docs/full_essay.txt', 'r', encoding='utf-8') as file:
+            full_essay: str = file.read()
+
+        full_essay_query_1: str = "What is courage?"
+        full_essay_query_2: str = "What is bravery?"
+        full_essay_query_3: str = ("An example of a character in the literature who"
+                              " displays courage"
+                              )
+        full_essay_query_4: str = ("An example of a character in the literature who"
+                              " exhibits bravery"
+                              )
+        full_essay_query_5: str = "What risks a courageous act entails?"
+        full_essay_query_6: str = "What risks a brave act entails?"
+
+        full_essay_queries: List[str] = [
+            full_essay_query_1,
+            full_essay_query_2,
+            full_essay_query_3,
+            full_essay_query_4,
+            full_essay_query_5,
+            full_essay_query_6
+        ]
+
+        test_data: Dict[str, Any] = {
+            "essay": full_essay,
+            "queries": full_essay_queries
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+
+        assert response.status_code == 200
+
+    def test_full_essay_response_body(self, test_client: FlaskClient) -> None:
+        """
+        Test that the response from the /answers endpoint contains 
+        the 'answers' key in the JSON response body when provided 
+        with a full essay and queries.
+        """
+
+        with open('./tests/docs/full_essay.txt', 'r', encoding='utf-8') as file:
+            full_essay: str = file.read()
+
+        full_essay_query_1: str = "What is courage?"
+        full_essay_query_2: str = "What is bravery?"
+        full_essay_query_3: str = ("An example of a character in the literature who"
+                              " displays courage"
+                              )
+        full_essay_query_4: str = ("An example of a character in the literature who"
+                              " exhibits bravery"
+                              )
+        full_essay_query_5: str = "What risks a courageous act entails?"
+        full_essay_query_6: str = "What risks a brave act entails?"
+
+        full_essay_queries: List[str] = [
+            full_essay_query_1,
+            full_essay_query_2,
+            full_essay_query_3,
+            full_essay_query_4,
+            full_essay_query_5,
+            full_essay_query_6
+        ]
+
+        test_data: Dict[str, Any] = {
+            "essay": full_essay,
+            "queries": full_essay_queries
+        }
+
+        response: TestResponse = test_client.post('/answers', json=test_data)
+        data: Dict[str, Any] = response.get_json()
+
+        path_to_expected_answers: str = './tests/docs/expected_answers_full_essay.txt'
+        with open(path_to_expected_answers, 'r', encoding='utf-8') as file:
+            expected_answers: List[str] = file.read().splitlines()
+
+        assert all(answer in data['answers'] for answer in expected_answers)
+
+if __name__ == '__main__':
+    pytest.main()
