@@ -8,6 +8,8 @@ Encoder class for embedding the queries and essay sentences.
 import sys
 import os
 from typing import List, Dict
+import logging
+from logging import Logger
 
 from .encoder import Encoder
 from .text_pre_processor import TextPreProcessor
@@ -34,6 +36,14 @@ class AnswerService:
         best-matching subtitles and sentences in the essay.
     """
 
+    def __init__(self) -> None:
+        """
+        Initializes the AnswerService with a logger.
+        """
+
+        self.logger: Logger = logging.getLogger(__name__)
+        self.logger.info("Answer service initialized.")
+
     def answer_questions_detailed(
             self,
             essay: str,
@@ -54,22 +64,35 @@ class AnswerService:
             sentence from the essay and its similarity score.
         """
 
+        self.logger.info("Answering questions in detail (with similarities)...")
+
         preprocessor = TextPreProcessor(essay)
         essay_sentences: List[str] = preprocessor.get_text_body()
 
         encoder: Encoder = Encoder()
+
+        self.logger.info("Encoding queries...")
         embedded_queries: List[SentenceEmbedding] = encoder.encode_string_list(queries)
+        self.logger.info("Finished encoding queries.")
+
+        self.logger.info("Encoding essay sentences...")
         embedded_essay_sentences: List[SentenceEmbedding] = encoder.encode_string_list(
             essay_sentences
         )
         if not embedded_essay_sentences:
+            self.logger.error("No essay sentences found.")
             return {}
+        self.logger.info("Finished encoding essay sentences.")
 
+        log: str = "Finding most similar sentences most similar to queries in essay..."
+        self.logger.info(log)
         answers: Dict[str, tuple[str, float]] = {}
         for query in embedded_queries:
             index, similarity = query.most_similar(embedded_essay_sentences)
             current_answer: str = embedded_essay_sentences[index].get_sentence()
             answers[query.get_sentence()] = (current_answer, similarity)
+
+        self.logger.info("Finished answering questions in detail (with similarities).")
 
         return answers
 
@@ -93,9 +116,12 @@ class AnswerService:
             queries
         )
 
+        self.logger.info("Returning list of answers to questions...")
         answers: List[str] = []
         for query, (answer, similarity) in detailed_answers.items():
             answers.append(answer)
+
+        self.logger.info("Finished returning list of answers to questions.")
 
         return answers
 
@@ -118,23 +144,33 @@ class AnswerService:
             subtitle and its similarity score.
         """
 
+        self.logger.info("Finding best subtitles for queries...")
         preprocessor: TextPreProcessor = TextPreProcessor(essay)
         essay_subtitles: List[str] = preprocessor.get_subtitles()
 
         encoder: Encoder = Encoder()
+
+        self.logger.info("Encoding queries...")
         embedded_queries: List[SentenceEmbedding] = encoder.encode_string_list(queries)
+        self.logger.info("Finished encoding queries.")
+
+        self.logger.info("Encoding essay subtitles...")
         embedded_essay_subtitles: List[SentenceEmbedding] = encoder.encode_string_list(
             essay_subtitles
         )
         if not embedded_essay_subtitles:
+            self.logger.error("No essay subtitles found.")
             return {}
+        self.logger.info("Finished encoding essay subtitles.")
 
+        self.logger.info("Finding most similar subtitles to queries...")
         best_subtitles: Dict[str, tuple[str, float]] = {}
         for query in embedded_queries:
             index, similarity = query.most_similar(embedded_essay_subtitles)
             current_best_subtitle: str = embedded_essay_subtitles[index].get_sentence()
             best_subtitles[query.get_sentence()] = (current_best_subtitle, similarity)
 
+        self.logger.info("Finished finding best subtitles for queries.")
         return best_subtitles
 
     def answer_based_on_subtitle(self, essay: str, queries: List[str]) -> List[str]:
@@ -154,6 +190,7 @@ class AnswerService:
             essay based on the best matching subtitles.
         """
 
+        self.logger.info("Answering questions based on subtitles...")
         preprocessor: TextPreProcessor = TextPreProcessor(essay)
 
         if preprocessor.is_text_only_subtitles():
@@ -166,12 +203,18 @@ class AnswerService:
             essay,
             queries
         )
-
         preprocessed_essay: Dict[str, List[str]] = preprocessor.preprocess_text()
-        best_answers: Dict[str, tuple[str, float]] = {}
 
+        self.logger.info("Finding best answers based on subtitles...")
+        best_answers: Dict[str, tuple[str, float]] = {}
         for query in embedded_queries:
             best_subtitle_for_query = best_subtitles[query.get_sentence()][0]
+
+            log: str = (f"Finding best answer for query '{query.get_sentence()}' inside "
+                        "the paragraph corresponding to subtitle "
+                        f"'{best_subtitle_for_query}'..."
+                        )
+            self.logger.info(log)
             paragraph: List[str] = preprocessed_essay[best_subtitle_for_query]
 
             embedded_paragraph: List[SentenceEmbedding] = encoder.encode_string_list(
@@ -182,8 +225,12 @@ class AnswerService:
             current_best_answer: str = embedded_paragraph[index].get_sentence()
             best_answers[query.get_sentence()] = (current_best_answer, similarity)
 
+
+        self.logger.info("Finished answering questions based on subtitles.")
+        self.logger.info("Returning list of answers to questions...")
         answers: List[str] = []
         for query, (answer, similarity) in best_answers.items():
             answers.append(answer)
 
+        self.logger.info("Finished returning list of answers to questions.")
         return answers
