@@ -80,7 +80,7 @@ class AnswerService:
             essay_sentences
         )
         if not embedded_essay_sentences:
-            self.logger.error("No essay sentences found.")
+            self.logger.warning("No essay sentences found.")
             return {}
         self.logger.info("Finished encoding essay sentences.")
 
@@ -156,7 +156,7 @@ class AnswerService:
             essay_subtitles
         )
         if not embedded_essay_subtitles:
-            self.logger.error("No essay subtitles found.")
+            self.logger.warning("No essay subtitles found.")
             return {}
         self.logger.info("Finished encoding essay subtitles.")
 
