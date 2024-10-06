@@ -6,6 +6,8 @@ identifying subtitles, and preprocessing the text for further analysis.
 
 
 from typing import List, Dict
+import logging
+from logging import Logger
 
 class TextPreProcessor:
     """
@@ -30,6 +32,8 @@ class TextPreProcessor:
         """
 
         self.text: str = text.strip()
+        self.logger: Logger = logging.getLogger(__name__)
+        self.logger.info("Text Pre-Processor initialized.")
 
     def split_paragraphs(self) -> List[str]:
         """
@@ -39,8 +43,12 @@ class TextPreProcessor:
             List[str]: A list of non-empty paragraphs.
         """
 
+        self.logger.info("Splitting text into paragraphs...")
+
         paragraphs: List[str] = self.text.split("\n")
         paragraphs = [paragraph for paragraph in paragraphs if paragraph != '']
+
+        self.logger.info(f"Found {len(paragraphs)} paragraphs.")
 
         return paragraphs
 
@@ -57,10 +65,14 @@ class TextPreProcessor:
             whitespaces.
         """
 
+        self.logger.info("Splitting paragraph into sentences...")
+
         paragraph = paragraph.strip()
 
         sentences: List[str] = paragraph.split(".")
         sentences = [sentence.strip() for sentence in sentences if sentence != '']
+
+        self.logger.info(f"Found {len(sentences)} sentences.")
 
         return sentences
 
@@ -78,13 +90,17 @@ class TextPreProcessor:
             bool: True if the paragraph is a subtitle, False otherwise.
         """
 
-
+        self.logger.info("Checking if paragraph is a subtitle...")
 
         paragraph = paragraph.strip()
         sentences: List[str] = self.split_sentences(paragraph)
 
         if len(sentences) == 1 and len(sentences[0]) <= self.MAX_CHARACTERS_SUBTITLE:
+            self.logger.info("Paragraph is a subtitle.")
             return True
+
+        self.logger.info("Paragraph is not a subtitle.")
+
         return False
 
     def preprocess_text(self) -> Dict[str, List[str]]:
@@ -99,6 +115,8 @@ class TextPreProcessor:
             Dict[str, List[str]]: A dictionary where keys are subtitles
             and values are lists of sentences.
         """
+
+        self.logger.info("Preprocessing text...")
 
         paragraphs: List[str] = self.split_paragraphs()
         preprocessed_text: Dict[str, List[str]] = {}
@@ -116,6 +134,8 @@ class TextPreProcessor:
                 sentences: List[str] = self.split_sentences(paragraph)
                 preprocessed_text[last_subtitle].extend(sentences)
 
+        self.logger.info("Text preprocessed successfully.")
+
         return preprocessed_text
 
     def get_text_body(self) -> List[str]:
@@ -129,6 +149,8 @@ class TextPreProcessor:
             List[str]: A list of sentences from the body of the text.
         """
 
+        self.logger.info("Getting text body...")
+
         preprocessed_text: Dict[str, List[str]] = self.preprocess_text()
         text_body: List[str] = []
 
@@ -139,6 +161,9 @@ class TextPreProcessor:
         for paragraph in preprocessed_text.values():
             for sentence in paragraph:
                 text_body.append(sentence)
+
+        self.logger.info("Got text body successfully.")
+
         return text_body
 
     def get_subtitles(self) -> List[str]:
@@ -152,7 +177,12 @@ class TextPreProcessor:
             List[str]: A list of subtitles from the text.
         """
 
+        self.logger.info("Getting subtitles...")
+
         preprocessed_text: Dict[str, List[str]] = self.preprocess_text()
+
+        self.logger.info("Got subtitles successfully.")
+
         return list(preprocessed_text.keys())
 
     def get_all_text_sentences(self) -> List[str]:
@@ -168,7 +198,13 @@ class TextPreProcessor:
             subtitles.
         """
 
-        return self.get_text_body() + self.get_subtitles()
+        self.logger.info("Getting all text sentences...")
+
+        all_text_sentences: List[str] = self.get_text_body() + self.get_subtitles()
+
+        self.logger.info("Got all text sentences successfully.")
+
+        return all_text_sentences
 
     def is_text_only_subtitles(self) -> bool:
         """
@@ -181,8 +217,13 @@ class TextPreProcessor:
             bool: True if the text contains only subtitles, False otherwise.
         """
 
+        self.logger.info("Checking if text contains only subtitles...")
+
         preprocessed_text: Dict[str, List[str]] = self.preprocess_text()
         if any(preprocessed_text.values()):
+            self.logger.info("Text contains body sentences.")
             return False
-        return True
 
+        self.logger.info("Text contains only subtitles.")
+
+        return True
