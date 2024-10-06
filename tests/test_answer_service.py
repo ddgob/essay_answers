@@ -185,7 +185,7 @@ class TestAnswerService:
 
         assert len(answers) == 0
 
-    def test_single_subtitle_answer_questions(self):
+    def test_single_subtitle_answer_questions(self) -> None:
         """
         Test the case where the text contains a single subtitle to 
         ensure no answers are returned if there is no content under 
