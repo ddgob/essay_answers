@@ -3,15 +3,27 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[[source]]
+url = "https://download.pytorch.org/whl/cpu"
+verify_ssl = true
+name = "downloadpytorch"
+
 [packages]
 flask = "*"
 gunicorn = "*"
-
-[dev-packages]
+pybind11 = "*"
+sentence-transformers = "*"
+numpy = "==1.24"
 mypy = "*"
 pytest = "*"
 flask-testing = "*"
+torch = {version = "*", index = "downloadpytorch"}
+requests = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.11"
 python_full_version = "3.11.10"
+
+[dev-packages]
+ipykernel = "*"
