@@ -14,16 +14,3 @@ Example usage:
 This module ensures that all tests can share a common test client 
 configuration for consistency and ease of maintenance.
 """
-
-from typing import Generator
-import pytest
-from flask.testing import FlaskClient
-
-from api import essay_answers_api
-
-@pytest.fixture
-def test_client() -> Generator[FlaskClient, None, None]:
-    """Set up a test client for Flask."""
-    essay_answers_api.config['TESTING'] = True
-    with essay_answers_api.test_client() as client:
-        yield client
