@@ -79,7 +79,13 @@ class AnswerServiceSpan:
             the given essay.
         """
 
-        inputs: Dict[str, Tensor] = self.tokenizer(query, essay, return_tensors='pt')
+        inputs: Dict[str, Tensor] = self.tokenizer(
+            query,
+            essay,
+            return_tensors='pt',
+            max_length=512,
+            truncation=True
+        )
 
         with no_grad():
             outputs = self.model(**inputs)
