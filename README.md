@@ -2,16 +2,20 @@
 
 ## Project Summary
 
-In this project we will be creating an application that receives and essay and some queries from the users and returns the answers to these queries. This service will be available to the user through an endpoint
+In this project we will be creating an application that receives an essay and some queries from the user and returns the answers to these queries. This service will be available to the user through API endpoints.
 
 ## If you are from MOST and evaluating my code, READ THIS!!
 
-1) Everything you need to know about the project is objectivly and cleanly explained here
+1) Everything you need to know about the project is objectively and clearly explained here
 2) Please follow the [quick tutorial](./quick_tutorial.ipynb) once you get to the [Usage](#usage) section
-3) At the end of this README, there is the [*Extra: Reimplementation using a new model*](#extra-reimplementation-using-a-new-model) section that dives into the **Extra Challenge for Adventurers**, described in bullet-point **4.** of the challenge description.
+3) At the end of this README, there is the [*Extra: Reimplementation using a new model*](#extra-reimplementation-using-a-new-model) section that dives into the **Extra Challenge for Adventurers**, shown in bullet-point **4.** of the challenge description.
 4) My contact information:
+      - Name: Daniel Oliveira Barbosa
       - Email: `danielolibar@gmail.com`
-      - Cell: `(33)99994-2000` 
+      - Cell: `(33)99994-2000`
+      - [Github](https://github.com/ddgob): https://github.com/ddgob
+      - [Linkedin](https://www.linkedin.com/in/danieloliveirabarbosa/): https://www.linkedin.com/in/danieloliveirabarbosa/
+      - University: UFMG
 
 ## Project Design and Technical Decisions
 
@@ -25,10 +29,11 @@ The project follows a modular architecture with clearly defined class structures
 
 - **SentenceEmbedding**: This class represents a sentence and its corresponding embedding, providing methods for calculating cosine similarity and finding the most similar sentence.
 - **SentenceTransformer (BERT)**: This class (imported from external library) enables the use of the BERT model `all-mpnet-base-v2`
-- **Encoder**: This class is responsible for encoding essay sentences and queries into embeddings using a pre-trained SentenceTransformer model.
+- **Encoder**: This class is responsible for encoding essay sentences and queries into embeddings using the BERT model described before.
 - **TestPreProcessor**: This class preprocesses the essay by splitting it into paragraphs and sentences, identifying subtitles, and organizing text for further analysis.
 - **AnswerService**: The service class that handles the core logic of finding answers to the queries by comparing query embeddings with essay embeddings and subtitles.
-- **EssayAnswersAPI**: This class encapsulates the API logic and provides the /answers endpoint for receiving essay and query input, coordinating the validation and answer generation process.
+- **EssayAnswersAPI**: This class encapsulates the API logic and provides the `/answers` endpoint (and others) for receiving essay and query input, coordinating the validation and answer generation process.
+
 - **AnswerServiceSpan and BertForQuestionAnswering**: These classes will be described in the section [*Extra: Reimplementation using a new model*](#extra-reimplementation-using-a-new-model)
 
 
@@ -38,7 +43,7 @@ The all-mpnet-base-v2 model from the SentenceTransformer library was chosen for 
 
 ### Similarity Measure Used for Comparing Embeddings
 
-Cosign similarity was chosen due to its focus on the angle between vectors rather than their magnitude, optimizing for semantic similarity of the embeddings. In addition to that widespread use of BERT and cosign similarity alongside each other makes the cosign similarity the ideal measurement of similarity.
+Cosine similarity was chosen due to its focus on the angle between vectors rather than their magnitude, optimizing for semantic similarity of the embeddings. In addition to that widespread use of BERT and cosige similarity alongside each other makes the cosige similarity the ideal measurement of similarity.
 
 ### Approaches to Dividing Essay Into Sentences:
 
@@ -53,9 +58,9 @@ This first solution consists in embedding all the sentences (that are not subtit
 - **Pro:** this approach is thorough and ensures that the sentence returned as the answer is the most similar possible for a given query
 - **Con:** this approach has a higher computational complexity due to having to embed and compare all non-subtitle sentences
 
-**OBS:** to use this approach you must use the endpoint `/answers` that is described in the [API Reference](#api-reference) section
+**Important:** to use this approach you must use the endpoint `/answers` that is described in the [API Reference](#api-reference) section
 
-#### 2. Analyzing only the sentences for the most similar subtitle
+#### 2. Analyzing only the sentences under the most similar subtitle
 
 This second solution consists in:
 1) Embedding only the subtitles of the essay
@@ -66,7 +71,7 @@ This second solution consists in:
 - **Pro:** this approach has a lower computational complexity due to not having to embed and search through all the sentences of the essay. In this approach you would only search through the subtitles and then through the sentences under the subtitle that is most similar to the query.
 - **Con:** this approach can lead to suboptimal answers, because there is no guarantee that the sentence that best answers query will be under the the subtitle that is most similar to the query.
 
-**OBS:** to use this approach you must use the endpoint `/answers_based_on_subtitles` that is described in the [API Reference](#api-reference) section
+**Important:** to use this approach you must use the endpoint `/answers_based_on_subtitles` that is described in the [API Reference](#api-reference) section
 
 ### Formatting and Style Guide
 
@@ -179,7 +184,7 @@ curl -X POST http://127.0.0.1:8000/answers \
         }'
 ```
 
-**OBS:** make sure you have `curl` installed
+**Important:** make sure you have `curl` installed
 
 #### Example Response:
 
@@ -189,7 +194,7 @@ curl -X POST http://127.0.0.1:8000/answers \
 }
 ```
 
-**OBS:** the same can be done to use the `/answers_based_on_subtitles` endpoint. Just change the address of the POST request!
+**Note:** the same can be done to use the `/answers_based_on_subtitles` endpoint. Just change the address of the POST request!
 
 ## API Reference
 
@@ -202,12 +207,15 @@ curl -X POST http://127.0.0.1:8000/answers \
         - `answers` (array of strings): A list of answers corresponding to the queries.
 
 - POST `/answers_based_on_subtitles`
-    - **Description:** Returns the answers to the provided queries by first finding the subtitles that best match them, and then finding the sentences inside the paragraphs corresponding to those subtitles that best matches the queries.
+    - **Description:** Returns the answers to the provided queries by first finding the subtitles that best match them, and then finding the sentences inside the paragraphs corresponding to those subtitles that best match the queries.
     - **Request Body:**
         - `essay` (string): The essay text.
         - `queries` (array of strings): A list of queries related to the essay.
     - **Request Body:**
         - `answers` (array of strings): A list of answers corresponding to the queries.
+  
+- POST `/answers_span`
+    - Refer to [API Endpoint: `/answers_span`](#api-endpoint-answers_span)
 
 
 ## Testing
@@ -222,7 +230,7 @@ This will run pytest on all the tests implemented in `/tests` and also check the
 
 ## *Extra: Reimplementation using a new model*
 
-In addition to sentence embedding-based answering, this project includes span-based question answering using a question answering specific BERT model.
+In addition to sentence embedding based answering, this project includes span-based question answering using a question answering specific BERT model.
 
 ### Span-based Question Answering: `AnswerServiceSpan`
 
