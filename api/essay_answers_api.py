@@ -27,7 +27,11 @@ class EssayAnswersAPI:
     A class-based API for processing essays and queries.
 
     This class encapsulates a Flask application that provides an 
-    endpoint (/answers) to process POST requests containing an essay and
+    endpoints: 
+        - (/answers)
+        - (/answers_based_on_subtitles)
+        - (/answers_span)
+    to process POST requests containing an essay and
     a list of queries. It handles request validation and returns JSON 
     responses with answers or error messages based on the input.
     """
