@@ -23,6 +23,8 @@ Example usage:
 
 
 from typing import Dict
+import logging
+from logging import Logger
 
 from transformers import BertForQuestionAnswering, BertTokenizer
 from torch import Tensor, no_grad
@@ -52,12 +54,16 @@ class AnswerServiceSpan:
             answer, and convert it to text, we get the answer to the
             question as a substring of the input text (essay).
         """
+
         self.model = BertForQuestionAnswering.from_pretrained(
             'bert-large-uncased-whole-word-masking-finetuned-squad'
         )
         self.tokenizer = BertTokenizer.from_pretrained(
             'bert-large-uncased-whole-word-masking-finetuned-squad'
         )
+
+        self.logger: Logger = logging.getLogger(__name__)
+        self.logger.info("Span Answer Service initialized.")
 
     def answer_single_question_span(self, essay: str, query: str) -> str:
         """
@@ -100,6 +106,11 @@ class AnswerServiceSpan:
             List[str]: A list of answers to the questions based on the 
             given essay.
         """
+
+        self.logger.info("Answering questions based on essay span...")
+
         answers = [self.answer_single_question_span(essay, query) for query in queries]
+
+        self.logger.info("Finished answering questions based on essay span.")
 
         return answers
