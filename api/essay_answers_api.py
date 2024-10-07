@@ -2,9 +2,13 @@
 This module defines a simple Flask API for processing essays and 
 queries using an object-oriented approach.
 
-It includes an endpoint (/answers) that accepts a POST request
-containing an essay and a list of queries, then returns a JSON response
-with answers for each query.
+It includes endpoints: 
+    - (/answers)
+    - (/answers_based_on_subtitles)
+    - (/answers_span)
+
+All of them accept a POST request containing an essay and a list of 
+queries, then returns a JSON response with answers for each query.
 """
 
 from typing import List, Dict, Any, Union
@@ -13,7 +17,7 @@ from logging import Logger
 
 from flask import Flask, request, jsonify, Response, make_response
 
-from answer_service import AnswerService
+from answer_service import AnswerService, AnswerServiceSpan
 
 format: str = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, format=format)
@@ -30,12 +34,19 @@ class EssayAnswersAPI:
 
     def __init__(self) -> None:
         self.api: Flask = Flask(__name__)
+
         self.api.add_url_rule('/answers', view_func=self.get_answers, methods=['POST'])
         self.api.add_url_rule(
             '/answers_based_on_subtitles',
             view_func=self.get_answers_based_on_subtitle,
             methods=['POST']
         )
+        self.api.add_url_rule(
+            '/answers_span',
+            view_func=self.get_answers_span,
+            methods=['POST']
+        )
+
         self.logger: Logger = logging.getLogger(__name__)
         self.logger.info("API initialized.")
 
@@ -259,6 +270,62 @@ class EssayAnswersAPI:
         log: str = ("Finished processing POST request to /answers_based_on_subtitles "
                     "sucessfully."
                     )
+        self.logger.info(log)
+
+        return jsonify({"answers": answers})
+
+    def get_answers_span(self) -> Response:
+        """
+        Handles POST requests to the /answers_span endpoint.
+
+        This function processes a POST request that contains an essay 
+        and a list of queries. It validates that the essay is not empty 
+        or a string of whitespaces. If the essay is empty or contains 
+        only whitespace, it returns a 400 Bad Request response with 
+        an error message. Otherwise, it returns a JSON response with 
+        a list of answers, where each answer corresponds to a query,
+        using subtitles from the essay.
+
+        Expected JSON input format:
+        {
+            "essay": "This is an example essay.",
+            "queries": ["What is courage?", "What is bravery?"]
+        }
+
+        If the 'essay' field is empty or contains only whitespace:
+        {
+            "error": "Essay cannot be empty."
+        }
+
+        Returns:
+            Response: A JSON object containing either a list of answers 
+            or an error message. Example success response:
+            {
+                "answers": ["Answer number 1", "Answer number 2", ...]
+            }
+        """
+
+        self.logger.info("Processing POST request to /answers_span...")
+
+        data: Dict[str, Any] = request.get_json()
+        essay: str = data.get('essay', '')
+        queries: List[str] = data.get('queries', [])
+
+        response = self.validate_essay(essay)
+        if response:
+            return response
+
+        response = self.validate_queries(queries)
+        if response:
+            return response
+
+        answer_service_span: AnswerServiceSpan = AnswerServiceSpan()
+        answers: List[str] = answer_service_span.answer_questions_span(
+            essay,
+            queries
+        )
+
+        log: str = ("Finished processing POST request to /answers_span sucessfully.")
         self.logger.info(log)
 
         return jsonify({"answers": answers})
