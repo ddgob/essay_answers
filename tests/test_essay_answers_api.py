@@ -623,14 +623,7 @@ class TestEssayAnswersAPI:
         with open(path_to_expected_answers, 'r', encoding='utf-8') as file:
             expected_answers: List[str] = file.read().splitlines()
 
-        for answer in data['answers']:
-            print(answer)
-            print("##################################################################")
-
         assert all(answer in data['answers'] for answer in expected_answers)
 
 if __name__ == '__main__':
     pytest.main()
-    """tester = TestEssayAnswersAPI()
-    from tests import test_client
-    tester.test_get_answers_based_on_subtitle_success(test_client)"""
