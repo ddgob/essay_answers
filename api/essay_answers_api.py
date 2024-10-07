@@ -325,7 +325,7 @@ class EssayAnswersAPI:
             queries
         )
 
-        log: str = ("Finished processing POST request to /answers_span sucessfully.")
+        log: str = "Finished processing POST request to /answers_span sucessfully."
         self.logger.info(log)
 
         return jsonify({"answers": answers})
