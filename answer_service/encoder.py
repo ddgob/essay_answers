@@ -56,16 +56,10 @@ class Encoder:
             the original sentence and its corresponding embedding.
         """
 
-        self.logger.info("Encoding sentence...")
-
         with no_grad():
             embedding: Tensor = self.model.encode([sentence], convert_to_tensor=True)
 
-        self.logger.info("Converting embedding to numpy array...")
-
         numpy_embedding: List[float] = embedding.cpu().numpy()[0].tolist()
-
-        self.logger.info("Sentence encoded.")
 
         return SentenceEmbedding(sentence, numpy_embedding)
 
@@ -82,12 +76,8 @@ class Encoder:
             embeddings.
         """
 
-        self.logger.info("Encoding list of sentences...")
-
         sentence_embeddings: List[SentenceEmbedding] = []
         for sentence in sentences:
             sentence_embeddings.append(self.encode(sentence))
-
-        self.logger.info("List of sentences encoded.")
 
         return sentence_embeddings
