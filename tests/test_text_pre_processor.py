@@ -325,5 +325,31 @@ class TestTextPreProcessor:
 
         assert processor.is_text_only_subtitles() is False
 
+    def test_text_with_exclamation_mark(self) -> None:
+        """
+        Test that the split_sentences method correctly handles
+        sentences ending with an exclamation mark.
+        """
+
+        paragraph: str = "This is a sentence! This is another!"
+        processor: TextPreProcessor = TextPreProcessor(paragraph)
+
+        expected_sentences: List[str] = ["This is a sentence", "This is another"]
+
+        assert processor.split_sentences(paragraph) == expected_sentences
+
+    def test_text_with_question_mark(self) -> None:
+        """
+        Test that the split_sentences method correctly handles
+        sentences ending with a question mark.
+        """
+
+        paragraph: str = "This is a sentence? This is another?"
+        processor: TextPreProcessor = TextPreProcessor(paragraph)
+
+        expected_sentences: List[str] = ["This is a sentence", "This is another"]
+
+        assert processor.split_sentences(paragraph) == expected_sentences
+
 if __name__ == '__main__':
     pytest.main()
