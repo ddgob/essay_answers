@@ -8,6 +8,7 @@ identifying subtitles, and preprocessing the text for further analysis.
 from typing import List, Dict
 import logging
 from logging import Logger
+import re
 
 class TextPreProcessor:
     """
@@ -63,7 +64,7 @@ class TextPreProcessor:
 
         paragraph = paragraph.strip()
 
-        sentences: List[str] = paragraph.split(".")
+        sentences: List[str] = re.split(r'[.!?]', paragraph)
         sentences = [sentence.strip() for sentence in sentences if sentence != '']
 
         return sentences
