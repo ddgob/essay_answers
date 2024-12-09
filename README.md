@@ -4,19 +4,6 @@
 
 In this project we will be creating an application that receives an essay and some queries from the user and returns the answers to these queries. This service will be available to the user through API endpoints.
 
-## If you are from MOST and evaluating my code, READ THIS!!
-
-1) Everything you need to know about the project is objectively and clearly explained here
-2) Please follow the [quick tutorial](./quick_tutorial.ipynb) once you get to the [Usage](#usage) section
-3) At the end of this README, there is the [*Extra: Reimplementation using a new model*](#extra-reimplementation-using-a-new-model) section that dives into the **Extra Challenge for Adventurers**, shown in bullet-point **4.** of the challenge description.
-4) My contact information:
-      - Name: Daniel Oliveira Barbosa
-      - Email: `danielolibar@gmail.com`
-      - Cell: `(33)99994-2000`
-      - [Github](https://github.com/ddgob): https://github.com/ddgob
-      - [Linkedin](https://www.linkedin.com/in/danieloliveirabarbosa/): https://www.linkedin.com/in/danieloliveirabarbosa/
-      - University: UFMG
-
 ## Project Design and Technical Decisions
 
 ### Class Architecture
